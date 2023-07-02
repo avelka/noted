@@ -171,23 +171,15 @@ fn NoteList(
             return (v * r, r);
         }).reduce(|(at, ar), (bt, br)| (at + bt, ar + br)).unwrap_or((0.00, 1.00)); 
 
-        return tt / tr;
+        return (tt / tr).round() as i32;
     }; 
 
     let global_note = move || {
-        let mut i = 0;
-        let mut note = "";
-        let labels = global_scale_labels();
-        while i < labels.len() {
+        let v = get_total();
+        let above = global_threshold_array().iter().position(|&r| r >= v).unwrap_or(16);
+        let label = global_scale_labels()[above]; 
+        return label;
 
-            if get_total() < global_threshold_array()[i] as f32  {
-                note = labels[i - 1];
-                break;
-            }
-            note = labels[i];
-            i += 1;
-        }
-        note
     };
 
     view! { cx,
