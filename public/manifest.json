@@ -7,7 +7,7 @@
   "id": "com.avelka.noted",
   "icons": [
     {
-      "src": "icon.svg",
+      "src": "noted.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     }
