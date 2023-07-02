@@ -55,21 +55,12 @@ fn NoteItem(cx: Scope, id: i32, note: Note, set_notes: WriteSignal<Vec<(i32, Not
  
     let scale_labels = move || get_labels_array(local_scale().as_str()); 
     let threshold_array = move || get_threshold_array(local_scale().as_str()); 
-   let note = move || {
-        let mut i = 0;
-        let mut note = "";
-        let labels = scale_labels();
-        while i < labels.len() {
-            if value() < threshold_array()[i] {
-                note = labels[i - 1];
-                break;
-            }
-            note = labels[i];
-            i += 1;
-        }
-        note
+    let note = move || {
+        let v = value();
+        let above = threshold_array().iter().position(|&r| r > v).unwrap();
+        let label = scale_labels()[above - 1]; 
+        return label;
     };
- 
 
     view! { cx,
         <li class="note-item">
@@ -102,14 +93,16 @@ fn NoteItem(cx: Scope, id: i32, note: Note, set_notes: WriteSignal<Vec<(i32, Not
                 <label for="note">"Note"</label>
                 <select id="note" name="note" 
                     on:change=move |ev| {
-                       let scale = event_target_value(&ev);
-                       set_value(threshold_array()[s2n(&scale) as usize]);
+                       let label = event_target_value(&ev);
+                       let labelIndex = scale_labels().iter().position(|&r| r == label).unwrap();
+                       log!("{:?}, {:?}", label, labelIndex);
+                       set_value(threshold_array()[labelIndex]);
                     }
                     prop:value=note>
                     {move ||
-                        scale_labels().into_iter().enumerate().map(|(i, el)| { view! { cx, 
-                                <option value={i} selected={move || note().to_string() == i.to_string()} >{el}</option> 
-                            } })
+                        scale_labels().map(|el| { view! { cx, 
+                            <option value={el} selected={move || note().to_string() == el} >{el}</option> 
+                        }})
                         .collect_view(cx)
                     }
                 </select>
@@ -152,14 +145,14 @@ fn NoteList(
 ) -> impl IntoView {
  
     let mut next_note_id = 0;
-    let (global_scale, set_global_scale) = create_signal(cx, SEK2.to_string());
+    let (global_scale, set_global_scale) = create_signal(cx, SEK1.to_string());
     let (notes, set_notes) = create_signal(cx, vec![]);
     let global_scale_labels = move || get_labels_array(global_scale().as_str()); 
     let global_threshold_array = move || get_threshold_array(global_scale().as_str()); 
     let add_note = move |_| {
         let note = Note {
             value: create_signal(cx, 0),
-            local_scale: create_signal(cx, "Sek 2".to_string()),
+            local_scale: create_signal(cx, SEK1.to_string()),
             ratio: create_signal(cx, 1),
             name: create_signal(cx, "Note".to_string()),
         };
@@ -175,13 +168,12 @@ fn NoteList(
             let (ratio, _) = note.ratio;
             let v = value() as f32;
             let r = ratio() as f32;
-            let t = v * r;
-            return (t, r);
+            return (v * r, r);
         }).reduce(|(at, ar), (bt, br)| (at + bt, ar + br)).unwrap_or((0.00, 1.00)); 
 
-        
         return tt / tr;
     }; 
+
     let global_note = move || {
         let mut i = 0;
         let mut note = "";
@@ -261,7 +253,7 @@ fn App(cx: Scope) -> impl IntoView {
     view! { cx,
     <div class="app">
         <header>
-            <h1>"🦀 🎓 👩‍🎓"</h1>
+            <h1>"🎓"</h1>
         </header>
         <NoteList/>
     </div>

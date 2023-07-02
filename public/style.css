@@ -133,6 +133,7 @@ h6 {
 
 :focus {
   outline: var(--outline-base);
+  z-index: 1;
 }
 button {
   --_padding: calc(var(--sp-base) / 4);
@@ -210,19 +211,23 @@ footer button {
   height: 2rem;
 }
 .form-control input {
-  width: calc(5ch + 1rem);
+  width: calc(7ch + 1rem);
 }
 .form-control:first-of-type input {
   --_radius: calc(var(--sp-base) / 4);
   border-top-left-radius: var(--_radius);
   border-bottom-left-radius: var(--_radius);
 }
+.form-control input:invalid {
+  outline: 2px solid var(--color-text-danger);
+  z-index: 1;
+}
 .form-control input:focus {
   z-index: 1;
 }
 .form-control label {
-  font-size: 0.75rem;
-  color: var(--color-text-3);
+  font-size: 0.5rem;
+  color: var(--color-text-2);
 }
 .app header {
   display: inline;
@@ -240,7 +245,7 @@ footer button {
   border-collapse: collapse;
 
   border: 1px solid var(--color-surface-3);
-  color: var(--color-text-2);
+  color: var(--color-text-1);
 }
 .scale-table col:hover {
   color: var(--color-text-1);
@@ -261,7 +266,7 @@ footer button {
 }
 .scale-table tr:first-of-type {
   background: var(--color-surface-3);
-  color: var(--color-text-2);
+  color: var(--color-text-1);
 }
 
 .scale-table caption {
