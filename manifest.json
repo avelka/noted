@@ -1,0 +1,19 @@
+{
+  "version": "1",
+  "manifest_version": 2,
+  "short_name": "NotEd",
+  "name": "NotEd",
+  "description": "NotEd is a app to calculate hessen (de) grades in college",
+  "id": "com.avelka.noted",
+  "icons": [
+    {
+      "src": "noted.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0CF0AB",
+  "background_color": "#1E1E1E"
+}
