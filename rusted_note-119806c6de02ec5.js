@@ -580,7 +580,7 @@ async function __wbg_init(input) {
     if (wasm !== undefined) return wasm;
 
     if (typeof input === 'undefined') {
-        input = new URL('rusted_note-c7f446efc8262290_bg.wasm', import.meta.url);
+        input = new URL('rusted_note-119806c6de02ec5_bg.wasm', import.meta.url);
     }
     const imports = __wbg_get_imports();
 
