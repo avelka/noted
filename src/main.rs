@@ -57,8 +57,8 @@ fn NoteItem(cx: Scope, id: i32, note: Note, set_notes: WriteSignal<Vec<(i32, Not
     let threshold_array = move || get_threshold_array(local_scale().as_str()); 
     let note = move || {
         let v = value();
-        let above = threshold_array().iter().position(|&r| r > v).unwrap();
-        let label = scale_labels()[above - 1]; 
+        let above = threshold_array().iter().position(|&r| r >= v).unwrap_or(16);
+        let label = scale_labels()[above]; 
         return label;
     };
 
@@ -95,8 +95,8 @@ fn NoteItem(cx: Scope, id: i32, note: Note, set_notes: WriteSignal<Vec<(i32, Not
                     on:change=move |ev| {
                        let label = event_target_value(&ev);
                        let labelIndex = scale_labels().iter().position(|&r| r == label).unwrap();
-                       log!("{:?}, {:?}", label, labelIndex);
-                       set_value(threshold_array()[labelIndex]);
+                       let minNote = threshold_array()[labelIndex];
+                       set_value(minNote);
                     }
                     prop:value=note>
                     {move ||
@@ -161,7 +161,7 @@ fn NoteList(
         });
         next_note_id += 1;
     };
-    
+
     let get_total = move || { 
         let (tt, tr) = notes().iter().map(move |&(_, note)| {
             let (value, _) = note.value;
@@ -189,9 +189,10 @@ fn NoteList(
         }
         note
     };
+
     view! { cx,
         <main>
-            <table class="scale-table">
+            <div class="table-container"><table class="scale-table">
                 <caption>{move || global_scale()}</caption>
                 <colgroup>
                     {move || global_scale_labels().map(|_| { view! { cx, <col/> } })}
@@ -202,10 +203,10 @@ fn NoteList(
                 </tr>
                 <tr>
                     <th>"% ≥"</th>
-
                     {move || global_threshold_array().map(|s| { view! { cx, <td>{s}</td> } })}
                 </tr>
             </table>
+            </div>
             <ul class="note-list">
                 <For
                     each=notes
