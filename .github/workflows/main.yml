@@ -1,5 +1,4 @@
-name: Run Example Task
-
+name: Deploy
 on: [push]
 env:
   CARGO_TERM_COLOR: always
@@ -32,8 +31,10 @@ jobs:
         uses: jetli/trunk-action@v0.4.0
         with:
           version: "latest"
-
-      - name: Print Trunk Version
-        run: trunk --version
-      - name: Release
+      - name: Build
         run: trunk build --release
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: dist # The folder the action should deploy.
