@@ -142,7 +142,14 @@ button {
   border-radius: var(--_padding);
   background: var(--color-surface-2);
 }
-
+main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  min-height: 100%;
+  padding-bottom: 5rem;
+}
 footer {
   position: fixed;
   bottom: 0;
@@ -152,7 +159,7 @@ footer {
   color: var(--color-text-2);
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: end;
   gap: 0.5rem;
   padding: 0.5em;
 }
@@ -164,6 +171,7 @@ footer button {
   display: flex;
   flex-direction: column;
   gap: 1px;
+  padding: 0;
 }
 .note-item {
   display: flex;
@@ -191,6 +199,7 @@ footer button {
   display: flex;
   flex-direction: column;
 }
+.form-control select,
 .form-control input {
   border: none;
   background: var(--color-surface-2);
@@ -198,8 +207,10 @@ footer button {
   font-size: 1rem;
   padding: 0.5rem;
   min-width: 0;
-  width: calc(5ch + 1rem);
   height: 2rem;
+}
+.form-control input {
+  width: calc(5ch + 1rem);
 }
 .form-control:first-of-type input {
   --_radius: calc(var(--sp-base) / 4);
@@ -221,4 +232,60 @@ footer button {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.scale-table {
+  font-size: 0.75rem;
+  table-layout: fixed;
+  border-collapse: collapse;
+
+  border: 1px solid var(--color-surface-3);
+  color: var(--color-text-2);
+}
+.scale-table col:hover {
+  color: var(--color-text-1);
+
+  background: var(--color-accent);
+}
+.scale-table th,
+.scale-table td {
+  text-align: end;
+  padding: 0.25rem;
+}
+
+.scale-table th {
+  color: var(--color-accent);
+}
+.scale-table td {
+  width: 3ch;
+}
+.scale-table tr:first-of-type {
+  background: var(--color-surface-3);
+  color: var(--color-text-2);
+}
+
+.scale-table caption {
+  font-size: 0.5rem;
+  text-align: start;
+}
+.sr-only {
+  position: absolute;
+  clip: rect(1px, 1px, 1px, 1px);
+  padding: 0;
+  border: 0;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+}
+.total {
+  color: var(--color-text-1);
+}
+.total strong {
+  color: var(--color-accent);
+  font-weight: bold;
+}
+.total small {
+  font-size: 0.75rem;
+  color: var(--color-text-2);
+  font-weight: normal;
 }
