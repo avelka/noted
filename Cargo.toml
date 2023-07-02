@@ -1,5 +1,5 @@
 [package]
-name = "leptos-tutorial"
+name = "rusted_note"
 version = "0.1.0"
 edition = "2021"
 
