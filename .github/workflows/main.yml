@@ -43,17 +43,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 8
-          run_install: false
       - name: sw-cache
-        run: |
-          pnpm i -g workbox-cli
-          workbox generateSW workbox-config.js
+        run: npx workbox-cli generateSW workbox-config.js
+
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
