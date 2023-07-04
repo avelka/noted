@@ -1,7 +1,7 @@
 use leptos::*;
 const SEK2:&str =  "Sek 2";
 const SEK1:&str =  "Sek 1";
-const LANG:&str =  "Lang";
+const LANG:&str =  "Sprachen";
 
 static SCALES: [&str; 3] = [SEK2, SEK1, LANG];
 
