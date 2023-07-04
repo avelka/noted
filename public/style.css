@@ -230,8 +230,9 @@ footer button {
   color: var(--color-text-2);
 }
 .app header {
-  display: inline;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  background: linear-gradient(180deg, var(--color-surface-2), transparent);
 }
 .app main {
   display: flex;

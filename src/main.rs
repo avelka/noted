@@ -246,7 +246,8 @@ fn App(cx: Scope) -> impl IntoView {
     view! { cx,
     <div class="app">
         <header>
-            <h1>"🎓"</h1>
+            <img src="/noted.svg" alt="Noted" width="100" height="100" />
+            <h1 class="sr-only">"Noted"</h1>
         </header>
         <NoteList/>
     </div>
