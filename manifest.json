@@ -8,8 +8,9 @@
   "icons": [
     {
       "src": "noted.svg",
-      "sizes": "any maskable",
-      "type": "image/svg+xml"
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
       "src": "noted_192.png",
