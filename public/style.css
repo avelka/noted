@@ -218,6 +218,12 @@ footer button {
   border-top-left-radius: var(--_radius);
   border-bottom-left-radius: var(--_radius);
 }
+
+.form-control.standalone input {
+  --_radius: calc(var(--sp-base) / 4);
+  border-radius: var(--_radius);
+}
+
 .form-control input:invalid {
   outline: 2px solid var(--color-text-danger);
   z-index: 1;
@@ -306,4 +312,10 @@ footer button {
   font-size: 0.75rem;
   color: var(--color-text-2);
   font-weight: normal;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

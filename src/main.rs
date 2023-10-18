@@ -26,6 +26,20 @@ struct Note  {
 fn s2n(s: &str) -> i32 {
     s.parse::<i32>().unwrap()
 }
+fn s2f(s: &str) -> f32 {
+    s.parse::<f32>().unwrap()
+}
+
+fn custom_scale(val: i32, points: i32) -> String {
+    let s = points as f32;
+    let v = val as f32;
+    let res = format!("{:.1}", ((v / 100.0) * s * 2.0).round() / 2.0);
+    let rounded = res.strip_suffix(".0");
+    match rounded {
+        Some(r) => r.to_string(),
+        None => res.to_string(),
+    }
+}
 
 fn get_threshold_array(scale: &str) -> [i32; 16] {
     match scale {
@@ -46,9 +60,11 @@ fn get_labels_array(scale: &str) -> [&'static str; 16] {
 }
 
 #[component]
-fn NoteItem(cx: Scope, id: i32, note: Note, set_notes: WriteSignal<Vec<(i32, Note)>> ) -> impl IntoView {
+fn NoteItem(id: i32, note: Note, set_notes: WriteSignal<Vec<(i32, Note)>>, points: ReadSignal<i32>  ) -> impl IntoView {
     let (value, set_value) = note.value;
     let (ratio, set_ratio) = note.ratio;
+
+    let point_match = move |scale| custom_scale(scale, points.get());
     let (name, set_name) = note.name;
 
     let (local_scale, set_local_scale) = note.local_scale;
@@ -62,7 +78,7 @@ fn NoteItem(cx: Scope, id: i32, note: Note, set_notes: WriteSignal<Vec<(i32, Not
         return label;
     };
 
-    view! { cx,
+    view! {
         <li class="note-item">
         <form>
             <div class="form-control">
@@ -82,10 +98,10 @@ fn NoteItem(cx: Scope, id: i32, note: Note, set_notes: WriteSignal<Vec<(i32, Not
                     {
                         SCALES
                             .into_iter()
-                            .map(|s| { view! { cx, 
+                            .map(|s| { view! { 
                                 <option value={s} selected={local_scale() == s.to_string()} >{s}</option> 
                             } })
-                        .collect_view(cx)
+                        .collect_view()
                     }
                 </select>
             </div>
@@ -100,10 +116,10 @@ fn NoteItem(cx: Scope, id: i32, note: Note, set_notes: WriteSignal<Vec<(i32, Not
                     }
                     prop:value=note>
                     {move ||
-                        scale_labels().map(|el| { view! { cx, 
+                        scale_labels().map(|el| { view! { 
                             <option value={el} selected={move || note().to_string() == el} >{el}</option> 
                         }})
-                        .collect_view(cx)
+                        .collect_view()
                     }
                 </select>
             </div>
@@ -118,6 +134,22 @@ fn NoteItem(cx: Scope, id: i32, note: Note, set_notes: WriteSignal<Vec<(i32, Not
                     prop:value=value
                 />
             </div>
+            <div class="form-control">
+                <label for="note_point">"Point (#)"</label>
+                <input class="no-input-ui" name="note_point" type="number" input-mode="numeric"
+                    min="0"
+                    max={move || points.get()}
+                    step="0.5"
+
+                    on:input=move |ev| {
+                       let val_from_point = (s2f(&event_target_value(&ev)) / (points.get() as f32) * 100.0).round() as i32;
+                        
+                       set_value(val_from_point);
+                    }
+                    prop:value=move || point_match(value())
+                />
+            </div>
+
             <div class="form-control">
                 <label for="note_ratio">"Ratio"</label>
                 <input id="note_ratio" name="note_ratio" type="number" 
@@ -140,21 +172,22 @@ fn NoteItem(cx: Scope, id: i32, note: Note, set_notes: WriteSignal<Vec<(i32, Not
 }
 
 #[component]
-fn NoteList(
-    cx: Scope,
-) -> impl IntoView {
+fn NoteList() -> impl IntoView {
  
     let mut next_note_id = 0;
-    let (global_scale, set_global_scale) = create_signal(cx, SEK1.to_string());
-    let (notes, set_notes) = create_signal(cx, vec![]);
+    let (global_scale, set_global_scale) = create_signal(SEK1.to_string());
+    let (notes, set_notes) = create_signal(vec![]);
     let global_scale_labels = move || get_labels_array(global_scale().as_str()); 
-    let global_threshold_array = move || get_threshold_array(global_scale().as_str()); 
+    let global_threshold_array = move || get_threshold_array(global_scale().as_str());
+
+    let (points, set_points) = create_signal(100);
+    let point_match = move |scale| custom_scale(scale, points.get());
     let add_note = move |_| {
         let note = Note {
-            value: create_signal(cx, 0),
-            local_scale: create_signal(cx, SEK1.to_string()),
-            ratio: create_signal(cx, 1),
-            name: create_signal(cx, "Note".to_string()),
+            value: create_signal(0),
+            local_scale: create_signal(SEK1.to_string()),
+            ratio: create_signal(1),
+            name: create_signal("Note".to_string()),
         };
         set_notes.update(move |notes| {
             notes.push((next_note_id, note))
@@ -182,30 +215,43 @@ fn NoteList(
 
     };
 
-    view! { cx,
+    view! { 
         <main>
+              <div class="form-control standalone">
+                <label for="points">"Points"</label>
+                <input id="points" type="number" name="points" prop:value=points on:change=move |ev| {
+                    set_points(s2n(&event_target_value(&ev)))
+                }/>
+            </div>
+
             <div class="table-container"><table class="scale-table">
                 <caption>{move || global_scale()}</caption>
                 <colgroup>
-                    {move || global_scale_labels().map(|_| { view! { cx, <col/> } })}
+                    {move || global_scale_labels().map(|_| { view! { <col/> } })}
                 </colgroup>
                 <tr>
                     <th>"Note"</th>
-                    {move || global_scale_labels().map(|s| { view! { cx, <td>{s}</td> } })}
+                    {move || global_scale_labels().map(|s| { view! { <td>{s}</td> } })}
                 </tr>
                 <tr>
                     <th>"% ≥"</th>
-                    {move || global_threshold_array().map(|s| { view! { cx, <td>{s}</td> } })}
+                    {move || global_threshold_array().map(|s| { view! { <td>{s}</td> } })}
                 </tr>
+                <Show when=move || { points.get() != 100 }> 
+                <tr>
+                    <th>"Points"</th>
+                    {move || global_threshold_array().map(|s| { view! { <td>{point_match(s)}</td> } })}
+                </tr>
+                </Show>
             </table>
             </div>
             <ul class="note-list">
                 <For
                     each=notes
                     key=|note| note.0
-                    view=move |cx, (id, note)| {
-                        view! { cx,
-                            <NoteItem id=id note=note set_notes=set_notes/>
+                    children=move |(id, note)| {
+                        view! { 
+                            <NoteItem id=id note=note set_notes=set_notes points=points />
                         }
                     }
                 />
@@ -224,10 +270,10 @@ fn NoteList(
                     {
                         SCALES
                             .into_iter()
-                            .map(|s| { view! { cx, 
+                            .map(|s| { view! { 
                                 <option value={s} selected={global_scale() == s.to_string()} >{s}</option> 
                             } })
-                        .collect_view(cx)
+                        .collect_view()
                     }
                     </select>
                 </div>
@@ -242,8 +288,8 @@ fn NoteList(
 
 
 #[component]
-fn App(cx: Scope) -> impl IntoView {
-    view! { cx,
+fn App() -> impl IntoView {
+    view! {
     <div class="app">
         <header>
             <img src="/noted.svg" alt="Noted" width="100" height="100" />
@@ -254,5 +300,5 @@ fn App(cx: Scope) -> impl IntoView {
 }}
 
 fn main() {
-    leptos::mount_to_body(|cx| view! { cx, <App/> })
+    leptos::mount_to_body(|| view! { <App/> })
 }
